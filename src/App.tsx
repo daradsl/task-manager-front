@@ -1,35 +1,54 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { ChakraProvider, Box, Flex, Heading, Breadcrumb, BreadcrumbItem, BreadcrumbLink, useTheme, Center, Icon } from '@chakra-ui/react';
+import { BiTask } from 'react-icons/bi';
+import { BrowserRouter as Router, Link } from 'react-router-dom';
+import AppRoutes from './routes';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App: React.FC = () => {
+  const theme = useTheme();
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <ChakraProvider theme={theme}>
+      <Router>
+        <Box>
+          <Flex
+            as="header"
+            bg="teal.500"
+            color="white"
+            align="center"
+            justify="center"
+            p={4}
+            position="sticky"
+            top={0}
+            zIndex={1}
+            boxShadow="md"
+          >
+            <Heading size="md" fontFamily="Brush Script MT, Cursive">
+              Task Time Manager
+            </Heading>
+            <Icon as={BiTask} boxSize={6} marginLeft={2}/>
+          </Flex>
 
-export default App
+          <Center>
+            <Box mt={4}>
+              <Breadcrumb spacing="8px" separator=">">
+                <BreadcrumbItem>
+                  <BreadcrumbLink as={Link} to="/">Configurações</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbItem>
+                  <BreadcrumbLink as={Link} to="/outra-pagina">Outra Página</BreadcrumbLink>
+                </BreadcrumbItem>
+              </Breadcrumb>
+            </Box>
+          </Center>
+
+          <Box p={4}>
+            <AppRoutes />
+          </Box>
+        </Box>
+      </Router>
+    </ChakraProvider>
+  );
+};
+
+export default App;
