@@ -1,8 +1,20 @@
-import React from 'react';
-import { ChakraProvider, Box, Flex, Heading, Breadcrumb, BreadcrumbItem, BreadcrumbLink, useTheme, Center, Icon } from '@chakra-ui/react';
-import { BiTask } from 'react-icons/bi';
-import { BrowserRouter as Router, Link } from 'react-router-dom';
-import AppRoutes from './routes';
+import React from "react";
+import {
+  ChakraProvider,
+  Box,
+  Flex,
+  Heading,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  useTheme,
+  Center,
+  Icon,
+  Text,
+} from "@chakra-ui/react";
+import { BiTask } from "react-icons/bi";
+import { BrowserRouter as Router, Link } from "react-router-dom";
+import AppRoutes from "./routes";
 
 const App: React.FC = () => {
   const theme = useTheme();
@@ -17,7 +29,7 @@ const App: React.FC = () => {
             color="white"
             align="center"
             justify="center"
-            p={4}
+            p={2}
             position="sticky"
             top={0}
             zIndex={1}
@@ -26,17 +38,21 @@ const App: React.FC = () => {
             <Heading size="md" fontFamily="Brush Script MT, Cursive">
               Task Time Manager
             </Heading>
-            <Icon as={BiTask} boxSize={6} marginLeft={2}/>
+            <Icon as={BiTask} boxSize={6} marginLeft={2} />
           </Flex>
 
           <Center>
             <Box mt={4}>
-              <Breadcrumb spacing="8px" separator=">">
+              <Breadcrumb spacing="8px" separator="-">
                 <BreadcrumbItem>
-                  <BreadcrumbLink as={Link} to="/">Configurações</BreadcrumbLink>
+                  <BreadcrumbLink as={Link} to="/">
+                    <Text fontWeight="bold">Configs</Text>
+                  </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbItem>
-                  <BreadcrumbLink as={Link} to="/outra-pagina">Outra Página</BreadcrumbLink>
+                  <BreadcrumbLink as={Link} to="/new-page">
+                    <Text fontWeight="bold">New Page</Text>
+                  </BreadcrumbLink>
                 </BreadcrumbItem>
               </Breadcrumb>
             </Box>
