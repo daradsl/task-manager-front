@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
 const AnotherPage: React.FC = () => {
-  return <div>Outra Página</div>;
+  return <div>New Page</div>;
 };
 
 export default AnotherPage;
