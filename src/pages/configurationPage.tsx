@@ -96,22 +96,23 @@ const ConfigurationPage: React.FC = () => {
 
   if (loading) {
     return (
-      <Center h="100vh">
+      <Center h="100vh" bg="gray.100">
         <Spinner size="xl" />
       </Center>
     );
   }
 
   return (
-    <Center p={4}>
+    <Center bg="gray.100" minH="100vh">
       <Box
         mx="auto"
-        p={4}
+        p={8}
         borderWidth={2}
         borderRadius="md"
         boxShadow="md"
-        maxW="md"
+        maxW="2xl"
         w="full"
+        bg="white"
       >
         <Heading mb={4} fontSize="lg" textAlign="center">
           My Account
