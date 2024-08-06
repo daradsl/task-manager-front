@@ -16,7 +16,7 @@ import { Link, useLocation } from "react-router-dom";
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
-  const isLoginPage = location.pathname === "/login";
+  const isLoginPage = location.pathname === "/";
 
   return (
     <Box>
