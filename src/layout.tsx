@@ -1,4 +1,3 @@
-// src/components/Layout.tsx
 import React from "react";
 import {
   Box,
@@ -43,7 +42,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <Box mt={4}>
             <Breadcrumb spacing="8px" separator="-">
               <BreadcrumbItem>
-                <BreadcrumbLink as={Link} to="/configs">
+                <BreadcrumbLink as={Link} to="/user-page">
                   <Text fontWeight="bold">Configs</Text>
                 </BreadcrumbLink>
               </BreadcrumbItem>

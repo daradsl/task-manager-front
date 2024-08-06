@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { getUsers, updateUser } from "../services/userService";
 
-const ConfigurationPage: React.FC = () => {
+const UserFormPage: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
@@ -165,4 +165,4 @@ const ConfigurationPage: React.FC = () => {
   );
 };
 
-export default ConfigurationPage;
+export default UserFormPage;
