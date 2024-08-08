@@ -9,14 +9,38 @@ import {
   Heading,
   Center,
   VStack,
+  useToast,
 } from "@chakra-ui/react";
+import { login } from "../services/authService";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const toast = useToast();
 
-  const handleSubmit = () => {};
+  const handleSubmit = async () => {
+    try {
+      const params = { email, password };
+      await login(params);
+      toast({
+        title: "Login successful.",
+        description: "You have been successfully logged in.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+      navigate("/user-page");
+    } catch (error) {
+      toast({
+        title: "Login failed.",
+        description: "Invalid email or password. Please try again.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
 
   const handleCreateAccount = () => {
     navigate("/user-page");

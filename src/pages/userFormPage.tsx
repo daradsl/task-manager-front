@@ -11,11 +11,15 @@ import {
   Spinner,
   useToast,
 } from "@chakra-ui/react";
-import { getUsers, updateUser } from "../services/userService";
+import { createUser, getLoggedUser, updateUser } from "../services/userService";
+import { useNavigate } from "react-router-dom";
 
 const UserFormPage: React.FC = () => {
+  const navigate = useNavigate();
+
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -26,19 +30,43 @@ const UserFormPage: React.FC = () => {
 
   const toast = useToast();
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const user = await getLoggedUser();
+        if (user) {
+          setFormData({
+            name: user.name,
+            email: user.email,
+            password: "********",
+            birthDate: new Date(user.birthDate).toISOString().split("T")[0],
+            id: user.id,
+          });
+          setIsLoggedIn(true);
+        }
+      } catch (error) {
+        console.log("No user logged in.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
-      [name]: name === "birthDate" ? value : value,
+      [name]: value,
     }));
   };
 
-  const toggleEditing = async () => {
+  const handleSubmit = async () => {
     const { name, email, password, birthDate, id } = formData;
-    if (isEditing) {
-      try {
-        await updateUser(formData.id, {
+    try {
+      if (isLoggedIn) {
+        await updateUser(id, {
           name,
           email,
           password,
@@ -52,47 +80,34 @@ const UserFormPage: React.FC = () => {
           duration: 5000,
           isClosable: true,
         });
-      } catch (error) {
+      } else {
+        await createUser({
+          name,
+          email,
+          password,
+          birthDate: new Date(birthDate),
+        });
         toast({
-          title: "Error updating user.",
-          description:
-            "There was an error updating the user data. Please try again.",
-          status: "error",
+          title: "User created.",
+          description: "The user has been successfully created.",
+          status: "success",
           duration: 5000,
           isClosable: true,
         });
+        navigate("/");
       }
+    } catch (error) {
+      toast({
+        title: `Error ${isLoggedIn ? "updating" : "creating"} user.`,
+        description: `There was an error ${
+          isLoggedIn ? "updating" : "creating"
+        } the user data. Please try again.`,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
-    setIsEditing(!isEditing);
   };
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const users = await getUsers();
-        const user = users[0];
-        setFormData({
-          name: user.name,
-          email: user.email,
-          password: "********",
-          birthDate: new Date(user.birthDate).toISOString().split("T")[0],
-          id: user.id,
-        });
-        setLoading(false);
-      } catch (error) {
-        toast({
-          title: "Error fetching user data.",
-          description:
-            "There was an error fetching the user data. Please try again.",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-      }
-    };
-
-    fetchUserData();
-  }, []);
 
   if (loading) {
     return (
@@ -115,7 +130,7 @@ const UserFormPage: React.FC = () => {
         bg="white"
       >
         <Heading mb={4} fontSize="lg" textAlign="center">
-          My Account
+          {isLoggedIn ? "My Account" : "Create Account"}
         </Heading>
         <VStack spacing={4} align="stretch">
           <FormControl id="name">
@@ -124,7 +139,7 @@ const UserFormPage: React.FC = () => {
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              isReadOnly={!isEditing}
+              isReadOnly={!isEditing && isLoggedIn}
             />
           </FormControl>
           <FormControl id="email">
@@ -133,7 +148,7 @@ const UserFormPage: React.FC = () => {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              isReadOnly={!isEditing}
+              isReadOnly={!isEditing && isLoggedIn}
             />
           </FormControl>
           <FormControl id="password">
@@ -143,7 +158,7 @@ const UserFormPage: React.FC = () => {
               type="password"
               value={formData.password}
               onChange={handleInputChange}
-              isReadOnly={!isEditing}
+              isReadOnly={!isEditing && isLoggedIn}
             />
           </FormControl>
           <FormControl id="birthDate">
@@ -153,11 +168,14 @@ const UserFormPage: React.FC = () => {
               type="date"
               value={formData.birthDate}
               onChange={handleInputChange}
-              isReadOnly={!isEditing}
+              isReadOnly={!isEditing && isLoggedIn}
             />
           </FormControl>
-          <Button onClick={toggleEditing} colorScheme="teal">
-            {isEditing ? "Save" : "Edit"}
+          <Button
+            onClick={isLoggedIn ? () => setIsEditing(!isEditing) : handleSubmit}
+            colorScheme="teal"
+          >
+            {isLoggedIn ? (isEditing ? "Save" : "Edit") : "Create"}
           </Button>
         </VStack>
       </Box>
