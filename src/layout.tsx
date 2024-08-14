@@ -12,14 +12,19 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { BiTask } from "react-icons/bi";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "./context/useAuth";
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const location = useLocation();
+  const navigate = useNavigate();
   const isLoginPage = location.pathname === "/";
 
   const { isAuthenticated, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   return (
     <Box>
@@ -43,14 +48,14 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         </Flex>
         {isAuthenticated && (
           <Flex align="flex-end">
-            <Button colorScheme="white" variant="link" onClick={logout}>
-              Sair
+            <Button colorScheme="white" variant="link" onClick={handleLogout}>
+              Logout
             </Button>
           </Flex>
         )}
       </Flex>
 
-      {!isLoginPage && (
+      {!isLoginPage && isAuthenticated && (
         <Center>
           <Box mt={4}>
             <Breadcrumb spacing="8px" separator="-">
