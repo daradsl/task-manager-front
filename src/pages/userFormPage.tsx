@@ -62,8 +62,28 @@ const UserFormPage: React.FC = () => {
     }));
   };
 
+  const handleEditClick = () => {
+    if (isEditing) {
+      handleSubmit();
+    } else {
+      setIsEditing(true);
+    }
+  };
+
   const handleSubmit = async () => {
     const { name, email, password, birthDate, id } = formData;
+
+    if (!name || !email || !password || !birthDate) {
+      toast({
+        title: "Invalid input",
+        description: "All fields are required.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
+
     try {
       if (isLoggedIn) {
         await updateUser(id, {
@@ -80,6 +100,7 @@ const UserFormPage: React.FC = () => {
           duration: 5000,
           isClosable: true,
         });
+        setIsEditing(false);
       } else {
         await createUser({
           name,
@@ -172,7 +193,7 @@ const UserFormPage: React.FC = () => {
             />
           </FormControl>
           <Button
-            onClick={isLoggedIn ? () => setIsEditing(!isEditing) : handleSubmit}
+            onClick={isLoggedIn ? handleEditClick : handleSubmit}
             colorScheme="teal"
           >
             {isLoggedIn ? (isEditing ? "Save" : "Edit") : "Create"}
