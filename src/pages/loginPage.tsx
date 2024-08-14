@@ -11,7 +11,8 @@ import {
   VStack,
   useToast,
 } from "@chakra-ui/react";
-import { login } from "../services/authService";
+import { login as authLogin } from "../services/authService";
+import { useAuth } from "../context/useAuth";
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -19,10 +20,14 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const toast = useToast();
 
+  const { login } = useAuth();
+
   const handleSubmit = async () => {
     try {
       const params = { email, password };
-      await login(params);
+      const response = await authLogin(params);
+      const { access_token, user } = response;
+      login(access_token, user);
       toast({
         title: "Login successful.",
         description: "You have been successfully logged in.",
