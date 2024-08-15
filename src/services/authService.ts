@@ -1,5 +1,5 @@
+import axios from "axios";
 import { LoginType } from "../types/loginType";
-import axios from '../utils/axiosConfig';
 
 const VITE_API_URL = import.meta.env.VITE_API_URL;
 
