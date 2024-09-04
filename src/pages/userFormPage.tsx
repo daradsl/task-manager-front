@@ -41,7 +41,9 @@ const UserFormPage: React.FC = () => {
           name: user.name,
           email: user.email,
           password: "********",
-          birthDate: new Date(user.birthDate).toISOString().split("T")[0],
+          birthDate: user.birthDate
+            ? new Date(user.birthDate).toISOString().split("T")[0]
+            : "",
           id: user.id,
         });
       }

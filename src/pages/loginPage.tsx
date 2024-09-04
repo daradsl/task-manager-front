@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -11,8 +11,16 @@ import {
   VStack,
   useToast,
 } from "@chakra-ui/react";
-import { login as authLogin } from "../services/authService";
+import { login as authLogin, loginWithGoogle } from "../services/authService";
 import { useAuth } from "../context/useAuth";
+import GoogleLogin, {
+  GoogleLoginResponse,
+  GoogleLoginResponseOffline,
+} from "react-google-login";
+import { gapi } from "gapi-script";
+import { User } from "../types/userType";
+
+const VITE_GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -27,29 +35,65 @@ const LoginPage: React.FC = () => {
       const params = { email, password };
       const response = await authLogin(params);
       const { access_token, user } = response;
-      login(access_token, user);
-      toast({
-        title: "Login successful.",
-        description: "You have been successfully logged in.",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
-      navigate("/user-page");
+      loginSuccess(access_token, user);
     } catch (error) {
-      toast({
-        title: "Login failed.",
-        description: "Invalid email or password. Please try again.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      loginFailed();
     }
+  };
+
+  const handleLoginWithGoogle = async (
+    response: GoogleLoginResponse | GoogleLoginResponseOffline
+  ) => {
+    if ("tokenObj" in response && "profileObj" in response) {
+      try {
+        const idToken = response.tokenObj.id_token;
+        const loginResponse = await loginWithGoogle({ idToken });
+        const { access_token, user } = loginResponse;
+        loginSuccess(access_token, user);
+      } catch (error) {
+        loginFailed();
+      }
+    } else {
+      loginFailed();
+    }
+  };
+
+  const loginFailed = () => {
+    toast({
+      title: "Login failed.",
+      description: "Invalid email or password. Please try again.",
+      status: "error",
+      duration: 5000,
+      isClosable: true,
+    });
+  };
+
+  const loginSuccess = (access_token: string, user: User) => {
+    login(access_token, user);
+    toast({
+      title: "Login successful.",
+      description: "You have been successfully logged in.",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
+    navigate("/user-page");
   };
 
   const handleCreateAccount = () => {
     navigate("/user-page");
   };
+
+  useEffect(() => {
+    function start() {
+      gapi.client.init({
+        clientId: VITE_GOOGLE_CLIENT_ID,
+        scope: "email",
+      });
+    }
+
+    gapi.load("client:auth2", start);
+  }, []);
 
   return (
     <Center h="100vh">
@@ -99,6 +143,13 @@ const LoginPage: React.FC = () => {
           >
             Create Account
           </Button>
+          <GoogleLogin
+            clientId={VITE_GOOGLE_CLIENT_ID}
+            buttonText="Login with Google"
+            onSuccess={(response) => handleLoginWithGoogle(response)}
+            onFailure={loginFailed}
+            cookiePolicy={"single_host_origin"}
+          />
         </VStack>
       </Box>
     </Center>

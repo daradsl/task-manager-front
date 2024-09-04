@@ -14,3 +14,16 @@ export const login = async (params: LoginType) => {
         throw new Error("Error logging in");
     }
 };
+
+
+export const loginWithGoogle = async (params: { idToken: string }) => {
+    try {
+        const response = await axios.post(`${VITE_API_URL}/auth/google-login`, params);
+        if (response.data.access_token) {
+            localStorage.setItem('jwt_token', response.data.access_token);
+        }
+        return response.data;
+    } catch (error) {
+        throw new Error("Error logging in");
+    }
+};
